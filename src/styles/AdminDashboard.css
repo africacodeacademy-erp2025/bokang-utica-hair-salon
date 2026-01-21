@@ -1,0 +1,542 @@
+/* ================= ADMIN DASHBOARD - PROFESSIONAL STYLING ================= */
+
+:root {
+  --primary: #d63384;
+  --primary-dark: #b82a6f;
+  --primary-light: #e75fa0;
+  --dark: #1a1a2e;
+  --dark-secondary: #16213e;
+  --accent: #ffc107;
+  --success: #28a745;
+  --danger: #dc3545;
+  --warning: #ffc107;
+  --info: #17a2b8;
+  --light: #f8f9fa;
+  --border: #e9ecef;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* ================= ADMIN LAYOUT ================= */
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+/* ================= SIDEBAR ================= */
+.admin-sidebar {
+  width: 280px;
+  background: linear-gradient(180deg, var(--dark) 0%, var(--dark-secondary) 100%);
+  color: white;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+}
+
+.admin-sidebar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 1px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.admin-sidebar h2 {
+  font-size: 1.8rem;
+  text-align: center;
+  padding: 30px 20px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  background: rgba(214, 51, 132, 0.1);
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.admin-sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 25px 15px;
+  flex: 1;
+}
+
+.admin-sidebar nav button {
+  background: transparent;
+  border: 2px solid transparent;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: left;
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-sidebar nav button:hover {
+  color: white;
+  background: rgba(214, 51, 132, 0.2);
+  border-color: rgba(214, 51, 132, 0.4);
+  transform: translateX(4px);
+}
+
+.admin-sidebar nav button.active {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 8px 16px rgba(214, 51, 132, 0.3);
+  font-weight: 600;
+}
+
+/* ================= SIDEBAR LOGOUT ================= */
+.sidebar-logout {
+  padding: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: auto;
+}
+
+.sidebar-logout button {
+  width: 100%;
+  background: rgba(220, 53, 69, 0.15);
+  color: #ff6b7a;
+  border: 2px solid rgba(220, 53, 69, 0.3);
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.sidebar-logout button:hover {
+  background: rgba(220, 53, 69, 0.25);
+  border-color: rgba(220, 53, 69, 0.5);
+  color: #ff8a98;
+}
+
+/* ================= MAIN CONTENT ================= */
+.admin-content {
+  flex: 1;
+  padding: 40px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Back Button */
+.admin-content > button {
+  align-self: flex-start;
+  margin-bottom: 25px;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--dark);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-content > button:hover {
+  background: white;
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateX(-4px);
+}
+
+/* ================= DASHBOARD SECTION ================= */
+.dashboard-section {
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.5s ease forwards;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dashboard-section h1 {
+  color: var(--primary);
+  margin-bottom: 30px;
+  font-size: 2rem;
+  font-weight: 700;
+  border-bottom: 3px solid var(--primary);
+  padding-bottom: 15px;
+}
+
+/* ================= APPOINTMENT LIST STYLING ================= */
+.dashboard-section > div {
+  padding: 30px;
+}
+
+.dashboard-section table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.dashboard-section table thead {
+  background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+}
+
+.dashboard-section table th {
+  padding: 16px;
+  text-align: left;
+  font-weight: 700;
+  color: var(--dark);
+  border-bottom: 3px solid var(--primary);
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dashboard-section table td {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.dashboard-section table tbody tr {
+  transition: all 0.3s ease;
+}
+
+.dashboard-section table tbody tr:hover {
+  background: rgba(214, 51, 132, 0.05);
+  box-shadow: inset 0 0 10px rgba(214, 51, 132, 0.1);
+}
+
+/* ================= FILTER & SEARCH BAR ================= */
+.dashboard-section > div:first-child {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 25px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #f0f0f0 100%);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.dashboard-section input {
+  padding: 12px 16px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  flex: 1;
+  min-width: 200px;
+}
+
+.dashboard-section input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(214, 51, 132, 0.1);
+}
+
+.dashboard-section select {
+  padding: 12px 16px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dashboard-section select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* ================= BUTTONS ================= */
+.dashboard-section button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Edit Button */
+.dashboard-section button[style*="backgroundColor: rgb(0, 123, 255)"],
+.dashboard-section button[style*="007bff"] {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3) !important;
+}
+
+.dashboard-section button[style*="backgroundColor: rgb(0, 123, 255)"]:hover,
+.dashboard-section button[style*="007bff"]:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px rgba(0, 123, 255, 0.4) !important;
+}
+
+/* Cancel Button */
+.dashboard-section button[style*="backgroundColor: rgb(220, 53, 69)"],
+.dashboard-section button[style*="dc3545"] {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3) !important;
+}
+
+.dashboard-section button[style*="backgroundColor: rgb(220, 53, 69)"]:hover,
+.dashboard-section button[style*="dc3545"]:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4) !important;
+}
+
+/* Save Button */
+.dashboard-section button[style*="backgroundColor: rgb(40, 167, 69)"],
+.dashboard-section button[style*="28a745"] {
+  background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3) !important;
+}
+
+.dashboard-section button[style*="backgroundColor: rgb(40, 167, 69)"]:hover,
+.dashboard-section button[style*="28a745"]:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px rgba(40, 167, 69, 0.4) !important;
+}
+
+/* Gray Buttons */
+.dashboard-section button[style*="backgroundColor: rgb(108, 117, 125)"],
+.dashboard-section button[style*="6c757d"] {
+  background: linear-gradient(135deg, #6c757d 0%, #545b62 100%) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3) !important;
+}
+
+.dashboard-section button[style*="backgroundColor: rgb(108, 117, 125)"]:hover,
+.dashboard-section button[style*="6c757d"]:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px rgba(108, 117, 125, 0.4) !important;
+}
+
+/* Clear Filters Button */
+.dashboard-section button[style*="backgroundColor: rgb(108, 117, 125)"] {
+  margin-left: auto;
+}
+
+/* Primary Buttons */
+.dashboard-section button[style*="backgroundColor: rgb(214, 51, 132)"],
+.dashboard-section button[style*="d63384"] {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(214, 51, 132, 0.3) !important;
+}
+
+.dashboard-section button[style*="backgroundColor: rgb(214, 51, 132)"]:hover,
+.dashboard-section button[style*="d63384"]:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px rgba(214, 51, 132, 0.4) !important;
+}
+
+/* ================= HAIRSTYLE MANAGER ================= */
+.dashboard-section > div > div {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 25px;
+  margin-top: 25px;
+}
+
+.dashboard-section > div > div > div {
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: var(--shadow);
+  position: relative;
+}
+
+.dashboard-section > div > div > div:hover {
+  border-color: var(--primary);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(214, 51, 132, 0.2);
+}
+
+.dashboard-section > div > div > div img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.dashboard-section > div > div > div:hover img {
+  transform: scale(1.08);
+}
+
+/* ================= UPLOAD BOX ================= */
+.upload-box {
+  background: linear-gradient(135deg, #f8f9fa 0%, #f0f0f0 100%);
+  padding: 40px;
+  border-radius: 16px;
+  border: 2px dashed var(--primary);
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.upload-box h2 {
+  color: var(--primary);
+  margin-bottom: 30px;
+  font-size: 1.8rem;
+}
+
+.upload-box input {
+  width: 100%;
+  padding: 16px;
+  margin-bottom: 15px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.upload-box input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(214, 51, 132, 0.1);
+}
+
+.upload-box button {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 16px rgba(214, 51, 132, 0.3);
+}
+
+.upload-box button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(214, 51, 132, 0.4);
+}
+
+.upload-box p {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 1024px) {
+  .admin-sidebar {
+    width: 240px;
+  }
+
+  .admin-content {
+    padding: 25px;
+  }
+
+  .dashboard-section {
+    padding: 25px;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-layout {
+    flex-direction: column;
+  }
+
+  .admin-sidebar {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .admin-sidebar h2 {
+    padding: 20px 15px;
+  }
+
+  .admin-sidebar nav {
+    padding: 15px 10px;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .admin-sidebar nav button {
+    flex-shrink: 0;
+    min-width: 120px;
+  }
+
+  .admin-content {
+    padding: 15px;
+  }
+
+  .dashboard-section {
+    padding: 15px;
+  }
+
+  .dashboard-section h1 {
+    font-size: 1.4rem;
+  }
+
+  .dashboard-section table {
+    font-size: 0.85rem;
+  }
+
+  .dashboard-section table th,
+  .dashboard-section table td {
+    padding: 12px 8px;
+  }
+
+  .dashboard-section button {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-sidebar nav {
+    flex-direction: column;
+  }
+
+  .admin-sidebar nav button {
+    min-width: auto;
+  }
+
+  .dashboard-section > div {
+    overflow-x: auto;
+  }
+
+  .dashboard-section table {
+    font-size: 0.75rem;
+  }
+
+  .dashboard-section > div > div {
+    grid-template-columns: 1fr;
+  }
+}

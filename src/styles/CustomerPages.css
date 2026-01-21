@@ -1,0 +1,414 @@
+/* ================= CUSTOMER PAGES STYLING ================= */
+
+/* ================= CUSTOMER HOME PAGE ================= */
+.customer-container {
+  max-width: 1400px;
+  margin: 40px auto;
+  background: linear-gradient(135deg, #faf5f3 0%, #f5f0ed 100%);
+  padding: 60px;
+  border-radius: 28px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  animation: fadeIn 0.6s ease;
+}
+
+.customer-container h1 {
+  text-align: center;
+  background: linear-gradient(135deg, #d63384, #b82a6f);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 15px;
+  font-size: 2.8rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.customer-container h2 {
+  color: #d63384;
+  font-size: 1.8rem;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.customer-container h3 {
+  color: #b82a6f;
+  font-size: 1.4rem;
+  margin-bottom: 15px;
+}
+
+.customer-container p {
+  text-align: center;
+  color: #7a6a58;
+  font-size: 1.1rem;
+  margin-bottom: 40px;
+  font-weight: 500;
+}
+
+/* Header with button */
+.customer-container > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* ================= HAIRSTYLES GRID ================= */
+.hairstyles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 35px;
+  margin-top: 40px;
+}
+
+.hairstyle-card {
+  background: white;
+  border-radius: 22px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border: 1px solid #f0e6e1;
+  position: relative;
+}
+
+.hairstyle-card:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 25px 60px rgba(214, 51, 132, 0.15);
+}
+
+.hairstyle-card img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.hairstyle-card:hover img {
+  transform: scale(1.05);
+}
+
+.hairstyle-card h3 {
+  padding: 20px;
+  text-align: center;
+  color: #2b1d0e;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.hairstyle-card button {
+  width: calc(100% - 40px);
+  margin: 0 20px 20px;
+  background: linear-gradient(135deg, #d63384, #b82a6f);
+  padding: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.hairstyle-card button:hover {
+  background: linear-gradient(135deg, #b82a6f, #a01e5c);
+  box-shadow: 0 10px 25px rgba(214, 51, 132, 0.3);
+}
+
+/* ================= BOOKING FORM ================= */
+.customer-container form {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.customer-container input {
+  padding: 14px 18px;
+  border-radius: 12px;
+  border: 2px solid #f0e6e1;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: #faf5f3;
+}
+
+.customer-container input:focus {
+  outline: none;
+  border-color: #d63384;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(214, 51, 132, 0.1);
+}
+
+.customer-container button {
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #d63384, #b82a6f);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 25px rgba(214, 51, 132, 0.2);
+}
+
+.customer-container button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #b82a6f, #a01e5c);
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px rgba(214, 51, 132, 0.3);
+}
+
+.customer-container button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ================= CONFIRMATION MESSAGE ================= */
+.customer-container > div[style*="backgroundColor"] {
+  padding: 20px;
+  border-radius: 12px;
+  border-left: 5px solid;
+  margin-bottom: 20px;
+  animation: slideDown 0.4s ease;
+}
+
+/* Success message */
+.customer-container > div[style*="d4edda"] {
+  background: linear-gradient(135deg, #d4edda, #e8f8f5) !important;
+  border-left-color: #28a745 !important;
+}
+
+/* Error message */
+.customer-container > div[style*="f8d7da"] {
+  background: linear-gradient(135deg, #f8d7da, #ffeaea) !important;
+  border-left-color: #dc3545 !important;
+}
+
+.customer-container > div[style*="backgroundColor"] strong {
+  display: block;
+  font-size: 1.1rem;
+  margin-bottom: 5px;
+}
+
+.customer-container > div[style*="backgroundColor"] p {
+  margin: 0 !important;
+  font-size: 0.95rem;
+}
+
+/* ================= BOOKING HISTORY PAGE ================= */
+.customer-container > h1 + p {
+  text-align: center;
+  color: #7a6a58;
+  font-size: 1rem;
+  margin-bottom: 30px;
+}
+
+.customer-container form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 40px;
+}
+
+.customer-container form input[type="email"] {
+  flex: 1;
+}
+
+.customer-container form button {
+  min-width: 140px;
+}
+
+/* Appointment cards */
+.customer-container > div[style*="border"] {
+  background: white;
+  border: 2px solid #f0e6e1;
+  border-radius: 16px;
+  padding: 25px;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.customer-container > div[style*="border"]:hover {
+  border-color: #d63384;
+  box-shadow: 0 15px 35px rgba(214, 51, 132, 0.1);
+}
+
+.customer-container > div[style*="border"] > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.customer-container > div[style*="border"] h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: #d63384;
+}
+
+.customer-container > div[style*="border"] p {
+  margin: 8px 0;
+  text-align: left;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+/* Status badges */
+.customer-container div[style*="backgroundColor: rgb"] {
+  display: inline-block;
+  padding: 8px 16px !important;
+  border-radius: 20px;
+  font-size: 0.85rem !important;
+  font-weight: 600;
+  text-align: center !important;
+  color: white !important;
+  margin-bottom: 0 !important;
+}
+
+/* ================= GALLERY SEARCH/FILTER ================= */
+.customer-container > div[style*="marginBottom: 20px"] {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30px;
+  margin-top: 20px;
+}
+
+.customer-container > div[style*="marginBottom: 20px"] input {
+  min-width: 300px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  border: 2px solid #f0e6e1;
+  font-size: 1rem;
+}
+
+.customer-container > div[style*="marginBottom: 20px"] button {
+  padding: 12px 18px;
+  font-size: 0.9rem;
+  min-width: 100px;
+  margin: 0;
+  box-shadow: none;
+}
+
+/* Grid/List toggle buttons */
+.customer-container > div[style*="display: flex"] > div[style*="display: flex"] button {
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  margin: 0;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  box-shadow: none;
+}
+
+.customer-container > div[style*="display: flex"] > div[style*="display: flex"] button[style*="backgroundColor: rgb(0, 123, 255)"] {
+  background: linear-gradient(135deg, #d63384, #b82a6f) !important;
+}
+
+/* ================= GALLERY LIST VIEW ================= */
+.gallery-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.style-list-item {
+  background: white;
+  border-bottom: 2px solid #f0e6e1;
+  transition: all 0.3s ease;
+}
+
+.style-list-item:hover {
+  background: #faf5f3;
+  border-left: 5px solid #d63384;
+}
+
+.style-list-item img {
+  border-radius: 8px;
+}
+
+.style-list-item .style-info {
+  flex: 1;
+}
+
+/* ================= ANIMATIONS ================= */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .customer-container {
+    padding: 30px;
+  }
+
+  .customer-container h1 {
+    font-size: 2rem;
+  }
+
+  .customer-container h2 {
+    font-size: 1.5rem;
+  }
+
+  .hairstyles-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
+
+  .customer-container form {
+    padding: 25px;
+  }
+
+  .customer-container > div[style*="marginBottom: 20px"] input {
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .customer-container {
+    padding: 20px;
+    margin: 20px;
+  }
+
+  .customer-container h1 {
+    font-size: 1.6rem;
+  }
+
+  .customer-container > div:first-child {
+    flex-direction: column;
+  }
+
+  .hairstyles-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .customer-container > div[style*="marginBottom: 20px"] {
+    flex-direction: column;
+  }
+
+  .customer-container > div[style*="marginBottom: 20px"] input {
+    width: 100%;
+  }
+
+  .customer-container > div[style*="marginBottom: 20px"] button {
+    width: 100%;
+  }
+}
