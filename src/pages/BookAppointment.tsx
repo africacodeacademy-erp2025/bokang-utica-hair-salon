@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { collection, addDoc, Timestamp } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, where, Timestamp } from "firebase/firestore";
 import { db } from "../firebase/config";
 import "../styles/CustomerPages.css";
 
@@ -17,8 +17,19 @@ export default function BookAppointment() {
   const [loading, setLoading] = useState(false);
   const [confirmationNumber, setConfirmationNumber] = useState("");
 
-  const generateConfirmationNumber = () => {
-    return "APPT" + Date.now().toString().slice(-8);
+  // Generates a unique confirmation number
+  const generateConfirmationNumber = () => "APPT" + Date.now().toString().slice(-8);
+
+  // Checks if the selected slot is available
+  const isSlotAvailable = async (date: string, time: string) => {
+    const q = query(
+      collection(db, "appointments"),
+      where("date", "==", date),
+      where("time", "==", time),
+      where("status", "in", ["pending", "confirmed"]) // only consider active bookings
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.empty; // true if no conflicts
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,14 +41,25 @@ export default function BookAppointment() {
     }
 
     setLoading(true);
+    setMessage("");
+
     try {
+      // Check if the slot is already booked
+      const available = await isSlotAvailable(date, time);
+      if (!available) {
+        setMessage("❌ Sorry, this time slot is already booked. Please choose another.");
+        setLoading(false);
+        return;
+      }
+
+      // If available, create the appointment
       const confirmNumber = generateConfirmationNumber();
       await addDoc(collection(db, "appointments"), {
-        name,
-        email,
+        customerName: name,
+        customerEmail: email.trim().toLowerCase(),
         date,
         time,
-        service: selectedStyle?.name || "Not specified",
+        hairstyle: selectedStyle?.name || "Not specified",
         status: "pending",
         confirmationNumber: confirmNumber,
         createdAt: Timestamp.now()
@@ -45,7 +67,10 @@ export default function BookAppointment() {
 
       setConfirmationNumber(confirmNumber);
       setMessage(`✅ Appointment booked successfully! Confirmation #: ${confirmNumber}`);
+
+      // Optional: redirect back to customer page after 3 seconds
       setTimeout(() => navigate("/customer"), 3000);
+
     } catch (error) {
       console.error("Booking error:", error);
       setMessage("❌ Failed to book appointment. Please try again.");
@@ -62,6 +87,7 @@ export default function BookAppointment() {
       >
         ← Back
       </button>
+
       <h1>Book Appointment</h1>
 
       {selectedStyle?.name && (
@@ -112,6 +138,7 @@ export default function BookAppointment() {
         >
           {loading ? "Booking..." : "Confirm Appointment"}
         </button>
+
         {message && (
           <p style={{ marginTop: "15px", padding: "10px", backgroundColor: confirmationNumber ? "#d4edda" : "#f8d7da", color: confirmationNumber ? "#155724" : "#721c24", borderRadius: "4px" }}>
             {message}
