@@ -1,3 +1,4 @@
+// src/pages/LandingPage.tsx
 import { useNavigate } from "react-router-dom";
 import { MdEmail } from "react-icons/md";
 import { FaWhatsapp, FaPhoneAlt } from "react-icons/fa";
@@ -6,7 +7,15 @@ export default function LandingPage() {
   const navigate = useNavigate();
 
   return (
-    <>
+    <div className="landing-page">
+      {/* ================= TOP NAV ================= */}
+      <header className="landing-nav">
+        <div className="logo">Bokang Utica Hair Salon</div>
+        <button className="signin-btn" onClick={() => navigate("/auth")}>
+          Sign In / Sign Up
+        </button>
+      </header>
+
       {/* ================= HERO SECTION ================= */}
       <section className="hero">
         <div className="hero-overlay" />
@@ -24,15 +33,8 @@ export default function LandingPage() {
           </p>
 
           <div className="hero-buttons">
-            <button onClick={() => navigate("/customer")}>
-              View Hairstyles
-            </button>
-
-            <button
-              className="secondary"
-              onClick={() => navigate("/admin/login")}
-            >
-              Admin Login
+            <button onClick={() => navigate("/hairstyles")}>
+              Explore Hairstyles
             </button>
           </div>
         </div>
@@ -81,14 +83,22 @@ export default function LandingPage() {
 
           <div className="contact-item">
             <FaWhatsapp className="contact-icon whatsapp" />
-            <a href="https://wa.me/26663250668" target="_blank">
+            <a
+              href="https://wa.me/26663250668"
+              target="_blank"
+              rel="noreferrer"
+            >
               +266 6325 0668
             </a>
           </div>
 
           <div className="contact-item">
             <FaWhatsapp className="contact-icon whatsapp" />
-            <a href="https://wa.me/26657642622" target="_blank">
+            <a
+              href="https://wa.me/26657642622"
+              target="_blank"
+              rel="noreferrer"
+            >
               +266 5764 2622
             </a>
           </div>
@@ -99,6 +109,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { useState, useEffect } from "react";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { app } from "../firebase/config";
 import "../index.css";
@@ -11,6 +11,17 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // user is already logged in, send to dashboard
+        navigate("/admin/dashboard");
+      }
+    });
+    return () => unsubscribe();
+  }, [navigate]);
 
   const handleLogin = async () => {
     try {
@@ -28,6 +39,7 @@ export default function Login() {
       <div className="login-card fade-up">
         <h2 className="fade-up delay-1">Admin Login</h2>
         <p className="fade-up delay-2">Welcome back! Please login to continue.</p>
+
         <form className="login-form fade-up delay-3" onSubmit={(e) => e.preventDefault()}>
           <input
             type="email"
@@ -43,7 +55,24 @@ export default function Login() {
           />
           <button onClick={handleLogin}>Login</button>
         </form>
+
         {message && <p className="login-message fade-up delay-4">{message}</p>}
+
+        {/* Back to landing button */}
+        <button
+          style={{
+            marginTop: "15px",
+            padding: "8px 16px",
+            backgroundColor: "#6c757d",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+          }}
+          onClick={() => navigate("/")}
+        >
+          ← Back to Landing Page
+        </button>
       </div>
     </div>
   );

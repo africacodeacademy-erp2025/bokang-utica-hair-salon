@@ -1,77 +1,52 @@
-import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase/config";
+// src/pages/CustomerHome.tsx
 import { useNavigate } from "react-router-dom";
-import "../styles/CustomerPages.css";
-
-interface Hairstyle {
-  id: string;
-  name: string;
-  imageUrl: string;
-}
 
 export default function CustomerHome() {
-  const [hairstyles, setHairstyles] = useState<Hairstyle[]>([]);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchHairstyles = async () => {
-      try {
-        const snapshot = await getDocs(collection(db, "hairstyles"));
-        const data = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...(doc.data() as Omit<Hairstyle, "id">)
-        }));
-        setHairstyles(data);
-      } catch (err) {
-        console.error("Failed to fetch hairstyles:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchHairstyles();
-  }, []);
-
   return (
-    <div className="customer-container">
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-        <h1 style={{ margin: 0 }}>Our Hairstyles</h1>
-        <button
-          onClick={() => navigate("/customer/bookings")}
-          style={{ padding: "10px 20px", backgroundColor: "#6c757d", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
-        >
-          View My Bookings
-        </button>
-      </div>
-      
-      <p style={{ textAlign: "center", marginBottom: 30 }}>
-        Explore our latest styles and book the one you love
-      </p>
+    <div className="customer-home min-h-[80vh] flex items-center justify-center bg-gradient-to-br from-pink-100 via-white to-purple-100 relative overflow-hidden">
 
-      {loading ? (
-        <p style={{ textAlign: "center" }}>Loading hairstyles...</p>
-      ) : hairstyles.length === 0 ? (
-        <p style={{ textAlign: "center" }}>
-          No hairstyles available yet. Please check back soon.
+      {/* Animated background shapes */}
+      <div
+        className="absolute top-[-80px] left-[-120px] w-[320px] h-[320px] rounded-full opacity-20"
+        style={{
+          background: 'radial-gradient(circle, #d63384 40%, transparent 70%)',
+          animation: 'float 7s ease-in-out infinite',
+          zIndex: 0,
+        }}
+      />
+      <div
+        className="absolute bottom-[-100px] right-[-100px] w-[260px] h-[260px] rounded-full opacity-15"
+        style={{
+          background: 'radial-gradient(circle, #b82a6f 40%, transparent 70%)',
+          animation: 'float 9s ease-in-out infinite reverse',
+          zIndex: 0,
+        }}
+      />
+
+      {/* Customer Card */}
+      <div className="customer-container relative z-10 fade-in">
+        <h1>Welcome to Utica Hair Salon!</h1>
+        <p>
+          Discover beautiful, professional hairstyles and book your next appointment with ease.
+          <br />
+          Explore our gallery to find your perfect look, or manage your bookings from your dashboard.
         </p>
-      ) : (
-        <div className="hairstyles-grid">
-          {hairstyles.map(style => (
-            <div key={style.id} className="hairstyle-card">
-              <img src={style.imageUrl} alt={style.name} />
-              <h3>{style.name}</h3>
-              <button
-                style={{ marginBottom: 15 }}
-                onClick={() => navigate("/customer/book", { state: style })}
-              >
-                Book this style
-              </button>
-            </div>
-          ))}
+        <div style={{ textAlign: 'center', marginTop: '30px' }}>
+          <button onClick={() => navigate('/customer/gallery')}>
+            ✨ Explore Hairstyles ✨
+          </button>
         </div>
-      )}
+      </div>
+
+      {/* Animations */}
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-30px); }
+        }
+      `}</style>
     </div>
   );
 }

@@ -1,0 +1,21 @@
+# Node
+node_modules
+npm-debug.log
+
+# Build output
+dist
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+
+# Env files
+.env
+.env.local
+
+# OS junk
+.DS_Store

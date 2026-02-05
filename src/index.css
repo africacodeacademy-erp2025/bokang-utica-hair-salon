@@ -515,3 +515,82 @@ tr:hover {
 .contact-section a:hover {
   text-decoration: underline;
 }
+/* ================= LANDING NAV ================= */
+.landing-nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 30px 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 50;
+}
+
+.landing-nav .logo {
+  color: white;
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.signin-btn {
+  background: transparent;
+  border: 2px solid white;
+  color: white;
+  padding: 12px 26px;
+  border-radius: 30px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.signin-btn:hover {
+  background: white;
+  color: #d63384;
+}
+
+/* ================= CONTACT ITEMS ================= */
+.contact-items {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: center;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 1.05rem;
+}
+
+.contact-icon {
+  font-size: 1.4rem;
+}
+
+.contact-icon.email {
+  color: #d63384;
+}
+
+.contact-icon.whatsapp {
+  color: #25d366;
+}
+
+.contact-icon.phone {
+  color: #444;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 768px) {
+  .landing-nav {
+    padding: 20px 25px;
+  }
+
+  .landing-nav .logo {
+    font-size: 1.3rem;
+  }
+
+  .signin-btn {
+    padding: 10px 20px;
+  }
+}

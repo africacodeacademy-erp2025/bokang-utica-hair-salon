@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/config";
 import "../styles/CustomerPages.css";
@@ -16,11 +17,15 @@ interface Hairstyle {
 type ViewMode = "grid" | "list";
 
 export default function CustomerGallery() {
+  const navigate = useNavigate();
   const [hairstyles, setHairstyles] = useState<Hairstyle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
+
+  // ✅ Use a ref for the search input
+  const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const fetchHairstyles = async () => {
@@ -54,49 +59,10 @@ export default function CustomerGallery() {
 
   return (
     <div className="gallery-page">
-      {/* Hero Section */}
-      <div className="gallery-hero">
-        <div className="gallery-hero-content">
-          <h1 className="gallery-hero-title">
-            Your Perfect Look
-            <span>Awaits</span>
-          </h1>
-          <p className="gallery-hero-subtitle">Discover Premium Hairstyles</p>
-          <p className="gallery-hero-description">
-            Explore our exclusive collection of professionally crafted hairstyles. Find the perfect style that matches your personality and confidence.
-          </p>
-          <div className="gallery-hero-buttons">
-            <button 
-              className="gallery-hero-btn gallery-hero-btn-primary"
-              onClick={() => document.querySelector('.gallery-search')?.focus()}
-            >
-              Explore Styles
-            </button>
-            <button className="gallery-hero-btn gallery-hero-btn-secondary">
-              Learn More
-            </button>
-          </div>
-
-          <div className="gallery-stats">
-            <div className="stat-item">
-              <div className="stat-number">{hairstyles.length}+</div>
-              <div className="stat-label">Hairstyles</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-number">100%</div>
-              <div className="stat-label">Premium Quality</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-number">✨</div>
-              <div className="stat-label">Expert Crafted</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Gallery Controls */}
       <div className="gallery-controls">
         <input
+          ref={searchRef}
           type="text"
           placeholder="🔍 Search hairstyles..."
           value={searchTerm}
@@ -129,28 +95,54 @@ export default function CustomerGallery() {
 
       {/* Gallery Content */}
       <div className="gallery-content">
-
-      {filteredHairstyles.length === 0 ? (
-        <p className="loading-text">No hairstyles found.</p>
-      ) : (
-        <div className={viewMode === "grid" ? "gallery-grid" : "gallery-list"}>
-          {filteredHairstyles.map(style => (
-            <div key={style.id} className={viewMode === "grid" ? "style-card" : "style-list-item"} style={viewMode === "list" ? { display: "flex", gap: "20px", alignItems: "center", padding: "15px", borderBottom: "1px solid #eee" } : {}}>
-              <img 
-                src={style.imageUrl} 
-                alt={style.name}
-                style={viewMode === "list" ? { width: "150px", height: "150px", objectFit: "cover", borderRadius: "4px" } : {}}
-              />
-              <div className="style-info">
+        {filteredHairstyles.length === 0 ? (
+          <p className="loading-text">No hairstyles found.</p>
+        ) : viewMode === "grid" ? (
+          <div className="hairstyles-grid">
+            {filteredHairstyles.map(style => (
+              <div key={style.id} className="hairstyle-card">
+                <img src={style.imageUrl} alt={style.name} />
                 <h3>{style.name}</h3>
                 {style.category && <p className="category">{style.category}</p>}
                 {style.description && <p className="description">{style.description}</p>}
                 {style.price && <p className="price">M{style.price}</p>}
+                <button
+                  onClick={() => navigate('/customer/book', { state: { name: style.name } })}
+                >
+                  Book Now
+                </button>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        ) : (
+          <div className="gallery-list">
+            {filteredHairstyles.map(style => (
+              <div
+                key={style.id}
+                className="style-list-item"
+                style={{ display: "flex", gap: "20px", alignItems: "center", padding: "15px", borderBottom: "1px solid #eee" }}
+              >
+                <img
+                  src={style.imageUrl}
+                  alt={style.name}
+                  style={{ width: "150px", height: "150px", objectFit: "cover", borderRadius: "4px" }}
+                />
+                <div className="style-info">
+                  <h3>{style.name}</h3>
+                  {style.category && <p className="category">{style.category}</p>}
+                  {style.description && <p className="description">{style.description}</p>}
+                  {style.price && <p className="price">M{style.price}</p>}
+                  <button
+                    onClick={() => navigate('/customer/book', { state: { name: style.name } })}
+                    style={{ marginTop: 12, background: '#d63384', color: 'white', border: 'none', borderRadius: 6, padding: '8px 20px', fontWeight: 600, cursor: 'pointer' }}
+                  >
+                    Book Now
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
