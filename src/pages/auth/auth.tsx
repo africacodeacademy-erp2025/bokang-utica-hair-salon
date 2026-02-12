@@ -145,7 +145,7 @@ export default function Auth() {
           }}
           onClick={() => navigate("/")}
         >
-          ← Back to Landing Page
+          ← Back
         </button>
       </div>
     </div>
