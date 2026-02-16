@@ -594,3 +594,65 @@ tr:hover {
     padding: 10px 20px;
   }
 }
+
+/* ================= WHITE HEADER ================= */
+.landing-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  background: rgb(238, 230, 230);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 60px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  z-index: 1000;
+}
+
+/* Logo */
+.header-logo {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #d63384;
+  cursor: pointer;
+}
+
+/* Auth button */
+.header-auth-btn {
+  background-color: #d63384;
+  color: rgb(255, 255, 255);
+  border: none;
+  padding: 10px 24px;
+  border-radius: 30px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.header-auth-btn:hover {
+  background-color: #b82a6f;
+}
+
+/* Push content below fixed header */
+.hero {
+  margin-top: 80px;
+}
+.my-bookings-pill {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #d63384, #b82a6f);
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.my-bookings-pill:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+  cursor: default;
+}

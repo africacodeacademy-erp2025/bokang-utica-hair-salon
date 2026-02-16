@@ -1,4 +1,3 @@
-// src/pages/LandingPage.tsx
 import { useNavigate } from "react-router-dom";
 import { MdEmail } from "react-icons/md";
 import { FaWhatsapp, FaPhoneAlt } from "react-icons/fa";
@@ -8,17 +7,26 @@ export default function LandingPage() {
 
   return (
     <div className="landing-page">
-      {/* ================= TOP NAV ================= */}
-      <header className="landing-nav">
-        <div className="logo">Bokang Utica Hair Salon</div>
-        <button className="signin-btn" onClick={() => navigate("/auth")}>
+      {/* ================= WHITE HEADER ================= */}
+      <header className="landing-header">
+        <div
+          className="header-logo"
+          onClick={() => navigate("/")}
+        >
+          BOKANG UTICA HAIR SALON
+        </div>
+
+        <button
+          className="header-auth-btn"
+          onClick={() => navigate("/auth")}
+        >
           Sign In / Sign Up
         </button>
       </header>
 
       {/* ================= HERO SECTION ================= */}
       <section className="hero">
-        <div className="hero-overlay" />
+        <div className="hero-overlay"></div>
 
         <div className="hero-content">
           <h1>
@@ -78,7 +86,9 @@ export default function LandingPage() {
         <div className="contact-items">
           <div className="contact-item">
             <MdEmail className="contact-icon email" />
-            <a href="mailto:bokang262@gmail.com">bokang262@gmail.com</a>
+            <a href="mailto:bokang262@gmail.com">
+              bokang262@gmail.com
+            </a>
           </div>
 
           <div className="contact-item">
@@ -105,7 +115,9 @@ export default function LandingPage() {
 
           <div className="contact-item">
             <FaPhoneAlt className="contact-icon phone" />
-            <a href="tel:+26651601010">+266 5160 1010</a>
+            <a href="tel:+26651601010">
+              +266 5160 1010
+            </a>
           </div>
         </div>
       </section>
