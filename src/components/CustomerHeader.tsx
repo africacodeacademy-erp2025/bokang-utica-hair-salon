@@ -19,11 +19,6 @@ export default function CustomerHeader({ onLogout }: Props) {
     textDecoration: "none" as const,
   };
 
-  const tabHoverStyle = {
-    transform: "scale(1.05)",
-    boxShadow: "0 8px 20px rgba(0,0,0,0.3)",
-  };
-
   return (
     <header
       className="customer-header"

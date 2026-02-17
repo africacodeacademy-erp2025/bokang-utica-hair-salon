@@ -412,4 +412,28 @@
     width: 100%;
   }
 }
+/* Header Tabs */
+.customer-nav a {
+  padding: 8px 20px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #d63384, #b82a6f);
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+/* Hover effect */
+.customer-nav a:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.3);
+}
+
+/* ACTIVE TAB (this is what shows where the user is) */
+.customer-nav a.active {
+  transform: scale(1.08);
+  box-shadow: 0 12px 26px rgba(214, 51, 132, 0.6);
+  border: 2px solid white;
+}
 
