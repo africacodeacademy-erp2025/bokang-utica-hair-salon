@@ -1,3 +1,4 @@
+// src/pages/CustomerGallery.tsx
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { collection, getDocs } from "firebase/firestore";
@@ -24,7 +25,6 @@ export default function CustomerGallery() {
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
 
-  // ✅ Use a ref for the search input
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -37,7 +37,6 @@ export default function CustomerGallery() {
           id: doc.id,
           ...doc.data(),
         })) as Hairstyle[];
-
         setHairstyles(data);
       } catch (error) {
         console.error("Error fetching hairstyles:", error);
@@ -46,7 +45,6 @@ export default function CustomerGallery() {
         setLoading(false);
       }
     };
-
     fetchHairstyles();
   }, []);
 
@@ -59,7 +57,7 @@ export default function CustomerGallery() {
 
   return (
     <div className="gallery-page">
-      {/* Gallery Controls */}
+      {/* Controls */}
       <div className="gallery-controls">
         <input
           ref={searchRef}
@@ -93,7 +91,7 @@ export default function CustomerGallery() {
         )}
       </div>
 
-      {/* Gallery Content */}
+      {/* Content */}
       <div className="gallery-content">
         {filteredHairstyles.length === 0 ? (
           <p className="loading-text">No hairstyles found.</p>
@@ -117,16 +115,8 @@ export default function CustomerGallery() {
         ) : (
           <div className="gallery-list">
             {filteredHairstyles.map(style => (
-              <div
-                key={style.id}
-                className="style-list-item"
-                style={{ display: "flex", gap: "20px", alignItems: "center", padding: "15px", borderBottom: "1px solid #eee" }}
-              >
-                <img
-                  src={style.imageUrl}
-                  alt={style.name}
-                  style={{ width: "150px", height: "150px", objectFit: "cover", borderRadius: "4px" }}
-                />
+              <div key={style.id} className="style-list-item">
+                <img src={style.imageUrl} alt={style.name} className="list-image" />
                 <div className="style-info">
                   <h3>{style.name}</h3>
                   {style.category && <p className="category">{style.category}</p>}
@@ -134,7 +124,7 @@ export default function CustomerGallery() {
                   {style.price && <p className="price">M{style.price}</p>}
                   <button
                     onClick={() => navigate('/customer/book', { state: { name: style.name } })}
-                    style={{ marginTop: 12, background: '#d63384', color: 'white', border: 'none', borderRadius: 6, padding: '8px 20px', fontWeight: 600, cursor: 'pointer' }}
+                    className="book-btn"
                   >
                     Book Now
                   </button>
@@ -144,6 +134,93 @@ export default function CustomerGallery() {
           </div>
         )}
       </div>
+
+      {/* Responsive styles */}
+      <style>
+        {`
+          .hairstyles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+          }
+          .hairstyle-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 16px;
+            text-align: center;
+          }
+          .hairstyle-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 6px;
+          }
+          .hairstyle-card button {
+            margin-top: 12px;
+            background: #d63384;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 20px;
+            font-weight: 600;
+            cursor: pointer;
+          }
+
+          .gallery-list .style-list-item {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+          }
+          .gallery-list .list-image {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+          }
+          .book-btn {
+            margin-top: 12px;
+            background: #d63384;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 20px;
+            font-weight: 600;
+            cursor: pointer;
+          }
+
+          /* Mobile adjustments */
+          @media (max-width: 768px) {
+            .hairstyles-grid {
+              grid-template-columns: repeat(2, 1fr);
+              gap: 12px;
+            }
+            .hairstyle-card img {
+              height: 140px;
+            }
+            .gallery-controls {
+              display: flex;
+              flex-direction: column;
+              gap: 8px;
+              padding: 10px;
+            }
+            .gallery-view-buttons {
+              display: flex;
+              justify-content: space-around;
+            }
+            .gallery-list .style-list-item {
+              flex-direction: column;
+              align-items: flex-start;
+            }
+            .gallery-list .list-image {
+              width: 100%;
+              height: auto;
+            }
+          }
+        `}
+      </style>
     </div>
   );
 }

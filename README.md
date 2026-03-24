@@ -1,53 +1,161 @@
-# React + TypeScript + Vite
+# Bokang Utica Hair Salon
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern React + TypeScript web application for Bokang Utica Hair Salon, featuring appointment booking, customer gallery, admin dashboard, and Firebase integration.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 🔐 **Authentication**: Firebase Auth with role-based access (Admin/Customer)
+- 📅 **Appointment Booking**: Real-time slot availability checking
+- 📧 **Email Confirmations**: Automated booking confirmation emails
+- 🖼️ **Hairstyle Gallery**: Customer gallery with image uploads via Cloudinary
+- 👨‍💼 **Admin Dashboard**: Manage appointments, view customer data
+- 📱 **Responsive Design**: Tailwind CSS for mobile-first design
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Frontend**: React 19, TypeScript, Vite
+- **Backend**: Firebase (Auth, Firestore, Storage)
+- **Styling**: Tailwind CSS
+- **Email**: Node.js + Nodemailer
+- **Image Upload**: Cloudinary
+- **Deployment**: Docker-ready
 
-## Expanding the ESLint configuration
+## Quick Start
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Prerequisites
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Node.js 18+
+- npm or yarn
+- Firebase project
+- Cloudinary account (for image uploads)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Installation
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd bokang-utica-hair-salon
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Environment Setup**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your actual configuration values
+   ```
+
+4. **Start Development Servers**
+   ```bash
+   # Terminal 1: Start the React app
+   npm run dev
+
+   # Terminal 2: Start the email server
+   npm run email-server
+   ```
+
+5. **Open your browser**
+   - App: http://localhost:5173
+   - Email server health: http://localhost:3000/api/health
+
+## Production Deployment
+
+### Environment Configuration
+
+For production, ensure all environment variables in `.env` are properly configured:
+
+```env
+# Required for production
+NODE_ENV=production
+ALLOWED_ORIGINS=https://yourdomain.com
+
+# Firebase (get from Firebase Console)
+VITE_FIREBASE_API_KEY=...
+VITE_FIREBASE_AUTH_DOMAIN=...
+# ... other Firebase vars
+
+# Email SMTP (required for real emails)
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_SECURE=false
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASS=your-app-password
+EMAIL_FROM=noreply@bokangutica.com
+
+# Update for production URL
+VITE_BOOKING_EMAIL_API_URL=https://your-api-domain.com/api/send-booking-confirmation
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Email Setup
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
+The application includes an email server for sending booking confirmations:
+
+1. **SMTP Configuration**: Set up SMTP credentials in `.env`
+2. **Test Mode**: Without SMTP, emails are logged to console
+3. **Production**: Configure real SMTP (Gmail, SendGrid, etc.)
+
+### Docker Deployment
+
+```bash
+# Build the application
+npm run build
+
+# Use Docker Compose for full deployment
+docker-compose up -d
+```
+
+### Health Checks
+
+- **App Health**: Check if the React app loads
+- **Email Health**: `GET /api/health` returns SMTP connection status
+- **Firebase**: Verify authentication and database connections
+
+## Development Scripts
+
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run lint         # Run ESLint
+npm run email-server # Start email server
+```
+
+## Project Structure
+
+```
+src/
+├── components/       # Reusable UI components
+├── pages/           # Page components
+├── firebase/        # Firebase configuration
+├── layouts/         # Layout components
+├── styles/          # CSS styles
+└── main.tsx         # App entry point
+
+email-server.js      # Email service
+.env.example         # Environment template
+```
+
+## API Endpoints
+
+### Email Server (Port 3000)
+
+- `POST /api/send-booking-confirmation` - Send booking confirmation email
+- `GET /api/health` - Health check with SMTP status
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## License
+
+This project is private and proprietary to Bokang Utica Hair Salon.
 import reactDom from 'eslint-plugin-react-dom'
 
 export default defineConfig([
@@ -70,4 +178,39 @@ export default defineConfig([
     },
   },
 ])
+
+## Booking confirmation email support
+
+1. Install backend deps:
+
+```bash
+npm install express cors nodemailer dotenv
+```
+
+2. Create `.env` values:
+
+```
+EMAIL_HOST=smtp.example.com
+EMAIL_PORT=587
+EMAIL_SECURE=false
+EMAIL_USER=your-smtp-user
+EMAIL_PASS=your-smtp-pass
+EMAIL_FROM="Utica Hair Salon <noreply@utica.com>"
+EMAIL_SERVER_PORT=3000
+VITE_BOOKING_EMAIL_API_URL=http://localhost:3000/api/send-booking-confirmation
+```
+
+3. Run local email server:
+
+```bash
+node email-server.js
+```
+
+4. Start app:
+
+```bash
+npm run dev
+```
+
+With that, new bookings will trigger a confirmation email on successful Firestore write.
 ```

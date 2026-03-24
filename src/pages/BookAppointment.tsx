@@ -20,53 +20,106 @@ export default function BookAppointment() {
 
   const [user, setUser] = useState<User | null>(null);
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(() => {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  });
   const [time, setTime] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [confirmationNumber, setConfirmationNumber] = useState("");
+  const [bookedTimes, setBookedTimes] = useState<string[]>([]);
 
-  // Automatically get current logged-in user
+  // ✅ Get logged-in user
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
         setName(currentUser.displayName || "");
-        setEmail(currentUser.email || "");
       } else {
         setUser(null);
         setName("");
-        setEmail("");
       }
     });
     return unsub;
   }, []);
 
+  // ✅ Fetch booked times for selected date
+  useEffect(() => {
+    const fetchBookedTimes = async () => {
+      const q = query(
+        collection(db, "appointments"),
+        where("date", "==", date),
+        where("status", "in", ["pending", "confirmed"])
+      );
+      const snapshot = await getDocs(q);
+      const times: string[] = [];
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.time) times.push(data.time);
+      });
+      setBookedTimes(times);
+    };
+    fetchBookedTimes();
+  }, [date]);
+
+  // ✅ Generate 30-min interval slots from 05:00 → 19:00
+  const generateTimeSlots = () => {
+    const slots: string[] = [];
+    for (let h = 5; h <= 19; h++) {
+      ["00", "30"].forEach((m) => {
+        const hour = h.toString().padStart(2, "0");
+        slots.push(`${hour}:${m}`);
+      });
+    }
+    return slots;
+  };
+
   const generateConfirmationNumber = () =>
     "APPT" + Date.now().toString().slice(-8);
 
-  // Check if the selected slot is available
-  const isSlotAvailable = async (date: string, time: string) => {
-    const q = query(
-      collection(db, "appointments"),
-      where("date", "==", date),
-      where("time", "==", time),
-      where("status", "in", ["pending", "confirmed"])
-    );
-    const snapshot = await getDocs(q);
-    return snapshot.empty;
+  const sendConfirmationEmail = async (
+    recipient: string,
+    customerName: string,
+    appointmentDate: string,
+    appointmentTime: string,
+    hairstyle: string,
+    confirmationNumber: string
+  ) => {
+    const apiUrl =
+      import.meta.env.VITE_BOOKING_EMAIL_API_URL ||
+      "http://localhost:3000/api/send-booking-confirmation";
+
+    try {
+      const res = await fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: recipient,
+          subject: "Bokang Utica Hair Salon - Appointment Confirmation",
+          body: `Dear ${customerName},\n\nYour appointment has been scheduled:\nDate: ${appointmentDate}\nTime: ${appointmentTime}\nService: ${hairstyle}\nConfirmation #: ${confirmationNumber}\n\nThank you!`,
+        }),
+      });
+      const emailResponse = await res.json().catch(() => ({}));
+      if (!res.ok) return `Failed to send email (${res.status})`;
+      return emailResponse.testMode
+        ? "Test mode: Email logged."
+        : "Confirmation email sent.";
+    } catch (err) {
+      console.error(err);
+      return `Failed to send confirmation email: ${err}`;
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!user) {
-      setMessage("❌ You must be logged in to book.");
+      setMessage("❌ Please login first.");
       return;
     }
 
-    if (!name || !email || !date || !time) {
+    if (!name || !date || !time) {
       setMessage("❌ Please fill in all fields.");
       return;
     }
@@ -74,21 +127,19 @@ export default function BookAppointment() {
     setLoading(true);
     setMessage("");
 
-    try {
-      // Check slot availability
-      const available = await isSlotAvailable(date, time);
-      if (!available) {
-        setMessage("❌ This time slot is already booked.");
-        setLoading(false);
-        return;
-      }
+    if (bookedTimes.includes(time)) {
+      setMessage("❌ This time slot is already booked.");
+      setLoading(false);
+      return;
+    }
 
+    try {
       const confirmNumber = generateConfirmationNumber();
 
-      // Save appointment in Firestore
       await addDoc(collection(db, "appointments"), {
+        userId: user.uid,
         customerName: name,
-        customerEmail: email.trim().toLowerCase(), // Email-based security
+        customerEmail: user.email || "",
         date,
         time,
         hairstyle: selectedStyle?.name || "Not specified",
@@ -98,7 +149,19 @@ export default function BookAppointment() {
       });
 
       setConfirmationNumber(confirmNumber);
-      setMessage(`✅ Appointment booked! Confirmation #: ${confirmNumber}`);
+
+      const emailStatus = await sendConfirmationEmail(
+        user.email || "",
+        name,
+        date,
+        time,
+        selectedStyle?.name || "Not specified",
+        confirmNumber
+      );
+
+      setMessage(
+        `✅ Appointment booked! Confirmation #: ${confirmNumber}. ${emailStatus}`
+      );
     } catch (error) {
       console.error("Booking error:", error);
       setMessage("❌ Failed to book appointment.");
@@ -107,13 +170,15 @@ export default function BookAppointment() {
     }
   };
 
+  const timeSlots = generateTimeSlots();
+
   return (
     <div
       className="customer-container"
       style={{ maxWidth: "500px", margin: "40px auto", padding: "20px" }}
     >
       <button
-        onClick={() => navigate("/customer/dashboard")}
+        onClick={() => navigate("/customer/gallery")}
         style={{
           marginBottom: "20px",
           backgroundColor: "#6c757d",
@@ -127,7 +192,13 @@ export default function BookAppointment() {
       <h1>Confirm Booking</h1>
 
       {selectedStyle?.name && (
-        <p style={{ textAlign: "center", marginBottom: 20, fontWeight: 600 }}>
+        <p
+          style={{
+            textAlign: "center",
+            marginBottom: 20,
+            fontWeight: 600,
+          }}
+        >
           Selected style:{" "}
           <span style={{ color: "#d63384" }}>{selectedStyle.name}</span>
         </p>
@@ -172,32 +243,44 @@ export default function BookAppointment() {
           placeholder="Your Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          disabled={!!name}
           required
         />
-        <input
-          type="email"
-          placeholder="Your Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          disabled={!!email}
-          required
-        />
+
+        <input type="email" value={user?.email || ""} disabled />
+
         <input
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
           required
+          style={{ padding: "14px", borderRadius: "10px", border: "1px solid #ccc", fontSize: "1rem", marginBottom: "15px" }}
         />
-        <input
-          type="time"
+
+        <select
           value={time}
           onChange={(e) => setTime(e.target.value)}
           required
-        />
+          style={{
+            padding: "14px",
+            borderRadius: "10px",
+            border: "1px solid #ccc",
+            fontSize: "1rem",
+            width: "100%",
+            marginBottom: "15px",
+          }}
+        >
+          <option value="">Select a time</option>
+          {timeSlots.map((slot) => (
+            <option key={slot} value={slot} disabled={bookedTimes.includes(slot)}>
+              {slot} {bookedTimes.includes(slot) ? " (Booked)" : ""}
+            </option>
+          ))}
+        </select>
+
         <button type="submit" disabled={loading}>
           {loading ? "Booking..." : "Confirm Appointment"}
         </button>
+
         {message && (
           <p
             style={{

@@ -1,9 +1,16 @@
 // src/pages/BookingHistory.tsx
+
 import { useState, useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../firebase/config";
-import { collection, getDocs, query, where, updateDoc, doc } from "firebase/firestore";
-import { db } from "../firebase/config";
+import { auth, db } from "../firebase/config";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  updateDoc,
+  doc
+} from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import "../styles/CustomerPages.css";
 
@@ -26,84 +33,170 @@ export interface CustomerAppointment {
 }
 
 export default function BookingHistory() {
-  const navigate = useNavigate();
-  const [appointments, setAppointments] = useState<CustomerAppointment[]>([]);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);
 
-  // Fetch bookings for logged-in user
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<'upcoming' | 'past'>('upcoming');
+
+  const [appointments, setAppointments] = useState<CustomerAppointment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   useEffect(() => {
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        try {
-          const q = query(
-            collection(db, "appointments"),
-            where("customerEmail", "==", user.email)
-          );
-          const querySnapshot = await getDocs(q);
-          const appts: CustomerAppointment[] = querySnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...(doc.data() as Omit<CustomerAppointment, "id">),
-          }));
-          setAppointments(appts);
-        } catch (err) {
-          console.error("Error fetching bookings:", err);
-          setError("Failed to load bookings. Please try again.");
-        }
-      } else {
+
+      if (!user) {
         setAppointments([]);
+        setLoading(false);
+        return;
       }
+
+      try {
+
+        const q = query(
+          collection(db, "appointments"),
+          where("customerEmail", "==", user.email)
+        );
+
+        const snapshot = await getDocs(q);
+
+        const data: CustomerAppointment[] = snapshot.docs.map((d) => ({
+          id: d.id,
+          ...(d.data() as Omit<CustomerAppointment, "id">)
+        }));
+
+        setAppointments(data);
+
+      } catch (err) {
+
+        console.error(err);
+        setError("Failed to load bookings.");
+
+      }
+
       setLoading(false);
+
     });
 
     return () => unsubscribe();
+
   }, []);
 
-  // Cancel booking
-  const handleCancelBooking = async (id: string) => {
-    if (!window.confirm("Are you sure you want to cancel this booking?")) return;
+  const cancelBooking = async (id: string) => {
+
+    if (!window.confirm("Cancel this booking?")) return;
 
     try {
-      await updateDoc(doc(db, "appointments", id), { status: "cancelled" });
-      setAppointments((prev) =>
-        prev.map((apt) =>
-          apt.id === id ? { ...apt, status: "cancelled" } : apt
+
+      await updateDoc(doc(db, "appointments", id), {
+        status: "cancelled"
+      });
+
+      setAppointments(prev =>
+        prev.map(a =>
+          a.id === id ? { ...a, status: "cancelled" } : a
         )
       );
-      alert("Booking cancelled successfully!");
-    } catch (err) {
-      console.error("Error cancelling booking:", err);
-      alert("Failed to cancel booking. Please try again.");
+
+    } catch {
+      alert("Failed to cancel booking.");
+    }
+
+  };
+
+  const addReview = async (id: string, rating: number, text: string) => {
+
+    const review = {
+      rating,
+      text,
+      createdAt: new Date().toISOString()
+    };
+
+    try {
+
+      await updateDoc(doc(db, "appointments", id), { review });
+
+      setAppointments(prev =>
+        prev.map(a =>
+          a.id === id ? { ...a, review } : a
+        )
+      );
+
+    } catch {
+
+      alert("Failed to submit review.");
+
+    }
+
+  };
+
+  const now = new Date();
+
+  const appointmentDateTime = (a: CustomerAppointment) => {
+    try {
+      const datePart = a.date;
+      const timePart = a.time;
+      if (!datePart || !timePart) return new Date(a.date);
+      return new Date(`${datePart}T${timePart}`);
+    } catch {
+      return new Date(a.date);
     }
   };
 
+  const upcoming = appointments
+    .filter((a) => {
+      const appointmentTime = appointmentDateTime(a);
+      return (
+        appointmentTime >= now &&
+        a.status !== "cancelled" &&
+        a.status !== "completed"
+      );
+    })
+    .sort((a, b) => appointmentDateTime(a).getTime() - appointmentDateTime(b).getTime());
+
+  const past = appointments
+    .filter((a) => {
+      const appointmentTime = appointmentDateTime(a);
+      return (
+        appointmentTime < now ||
+        a.status === "completed" ||
+        a.status === "cancelled"
+      );
+    })
+    .sort((a, b) => appointmentDateTime(b).getTime() - appointmentDateTime(a).getTime());
+
   const getStatusColor = (status?: string) => {
+
     switch (status) {
+
       case "confirmed":
         return "#28a745";
+
       case "completed":
         return "#6c757d";
+
       case "cancelled":
         return "#dc3545";
+
       default:
-        return "#ffc107"; // pending
+        return "#ffc107";
+
     }
+
   };
 
   const getStatusLabel = (status?: string) => {
-    return status ? status.charAt(0).toUpperCase() + status.slice(1) : "Pending";
+
+    return status
+      ? status.charAt(0).toUpperCase() + status.slice(1)
+      : "Pending";
+
   };
 
-  const today = new Date();
-  const upcomingAppointments = appointments.filter(
-    (apt: CustomerAppointment) => new Date(apt.date) >= today && apt.status !== "cancelled"
-  );
-  const pastAppointments = appointments.filter(
-    (apt: CustomerAppointment) => new Date(apt.date) < today || apt.status === "completed" || apt.status === "cancelled"
-  );
-
   return (
+
     <div className="customer-container">
+
       <button
         onClick={() => navigate("/customer")}
         style={{
@@ -114,7 +207,7 @@ export default function BookingHistory() {
           border: "none",
           borderRadius: "4px",
           cursor: "pointer",
-          fontSize: "14px",
+          fontSize: "14px"
         }}
       >
         ← Back
@@ -122,17 +215,64 @@ export default function BookingHistory() {
 
       <h1>Your Bookings</h1>
 
-      {loading && <p style={{ textAlign: "center", color: "#6c757d" }}>Loading bookings...</p>}
-      {error && <p style={{ textAlign: "center", color: "red" }}>{error}</p>}
-      {!loading && appointments.length === 0 && (
-        <p style={{ textAlign: "center", color: "#6c757d" }}>No bookings found.</p>
+      <div style={{ display: "flex", gap: "10px", marginBottom: "18px" }}>
+        <button
+          onClick={() => setActiveTab('upcoming')}
+          style={{
+            padding: "8px 16px",
+            border: "1px solid #ccc",
+            borderRadius: "20px",
+            background: activeTab === 'upcoming' ? "linear-gradient(90deg, #d63384, #b82a6f)" : "#fff",
+            color: activeTab === 'upcoming' ? "#fff" : "#333",
+            cursor: "pointer",
+            minWidth: "120px"
+          }}
+        >
+          Upcoming ({upcoming.length})
+        </button>
+
+        <button
+          onClick={() => setActiveTab('past')}
+          style={{
+            padding: "8px 16px",
+            border: "1px solid #ccc",
+            borderRadius: "20px",
+            background: activeTab === 'past' ? "linear-gradient(90deg, #d63384, #b82a6f)" : "#fff",
+            color: activeTab === 'past' ? "#fff" : "#333",
+            cursor: "pointer",
+            minWidth: "120px"
+          }}
+        >
+          Past ({past.length})
+        </button>
+      </div>
+
+      {loading && (
+        <p style={{ textAlign: "center", color: "#6c757d" }}>
+          Loading bookings...
+        </p>
       )}
 
-      {/* Upcoming Bookings */}
-      {upcomingAppointments.length > 0 && (
+      {error && (
+        <p style={{ textAlign: "center", color: "red" }}>
+          {error}
+        </p>
+      )}
+
+      {!loading && appointments.length === 0 && (
+        <p style={{ textAlign: "center", color: "#6c757d" }}>
+          No bookings found.
+        </p>
+      )}
+
+      {activeTab === 'upcoming' && upcoming.length > 0 && (
         <>
-          <h2 style={{ marginTop: "30px", marginBottom: "15px" }}>Upcoming Bookings</h2>
-          {upcomingAppointments.map((apt: CustomerAppointment) => (
+          <h2 style={{ marginTop: "30px", marginBottom: "15px" }}>
+            Upcoming Bookings
+          </h2>
+
+          {upcoming.map((apt) => (
+
             <div
               key={apt.id}
               style={{
@@ -140,16 +280,22 @@ export default function BookingHistory() {
                 borderRadius: "8px",
                 padding: "20px",
                 marginBottom: "15px",
-                backgroundColor: "#f8f9fa",
+                backgroundColor: "#f8f9fa"
               }}
             >
+
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "15px" }}>
+
                 <div>
+
                   <h3>{apt.hairstyle}</h3>
+
                   <p style={{ color: "#6c757d", fontSize: "14px" }}>
                     {apt.date} at {apt.time}
                   </p>
+
                 </div>
+
                 <div
                   style={{
                     backgroundColor: getStatusColor(apt.status),
@@ -157,17 +303,21 @@ export default function BookingHistory() {
                     padding: "5px 12px",
                     borderRadius: "20px",
                     fontSize: "12px",
-                    fontWeight: "bold",
+                    fontWeight: "bold"
                   }}
                 >
                   {getStatusLabel(apt.status)}
                 </div>
+
               </div>
 
               <div style={{ borderTop: "1px solid #dee2e6", paddingTop: "15px" }}>
+
                 <p><strong>Name:</strong> {apt.customerName}</p>
                 <p><strong>Email:</strong> {apt.customerEmail}</p>
+
                 {apt.status !== "cancelled" && (
+
                   <button
                     style={{
                       marginTop: "10px",
@@ -177,24 +327,33 @@ export default function BookingHistory() {
                       border: "none",
                       borderRadius: "4px",
                       cursor: "pointer",
-                      fontSize: "12px",
+                      fontSize: "12px"
                     }}
-                    onClick={() => handleCancelBooking(apt.id)}
+                    onClick={() => cancelBooking(apt.id)}
                   >
                     Cancel Booking
                   </button>
+
                 )}
+
               </div>
+
             </div>
+
           ))}
+
         </>
       )}
 
-      {/* Past / Completed / Cancelled Bookings */}
-      {pastAppointments.length > 0 && (
+      {past.length > 0 && (
+
         <>
-          <h2 style={{ marginTop: "30px", marginBottom: "15px" }}>Past Bookings</h2>
-          {pastAppointments.map((apt: CustomerAppointment) => (
+          <h2 style={{ marginTop: "30px", marginBottom: "15px" }}>
+            Past Bookings
+          </h2>
+
+          {past.map((apt) => (
+
             <div
               key={apt.id}
               style={{
@@ -202,16 +361,22 @@ export default function BookingHistory() {
                 borderRadius: "8px",
                 padding: "20px",
                 marginBottom: "15px",
-                backgroundColor: "#f1f3f5",
+                backgroundColor: "#f1f3f5"
               }}
             >
+
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "15px" }}>
+
                 <div>
+
                   <h3>{apt.hairstyle}</h3>
+
                   <p style={{ color: "#6c757d", fontSize: "14px" }}>
                     {apt.date} at {apt.time}
                   </p>
+
                 </div>
+
                 <div
                   style={{
                     backgroundColor: getStatusColor(apt.status),
@@ -219,112 +384,92 @@ export default function BookingHistory() {
                     padding: "5px 12px",
                     borderRadius: "20px",
                     fontSize: "12px",
-                    fontWeight: "bold",
+                    fontWeight: "bold"
                   }}
                 >
                   {getStatusLabel(apt.status)}
                 </div>
+
               </div>
 
               <div style={{ borderTop: "1px solid #dee2e6", paddingTop: "15px" }}>
+
                 <p><strong>Name:</strong> {apt.customerName}</p>
                 <p><strong>Email:</strong> {apt.customerEmail}</p>
-                {apt.status === "completed" && (
-                  <ReviewSection appointment={apt} appointmentId={apt.id} refresh={() => window.location.reload()} />
+
+                {apt.status === "completed" && !apt.review && (
+                  <ReviewForm
+                    appointmentId={apt.id}
+                    addReview={addReview}
+                  />
                 )}
+
+                {apt.review && (
+
+                  <div style={{
+                    marginTop: "10px",
+                    backgroundColor: "#e9ecef",
+                    padding: "10px",
+                    borderRadius: "6px"
+                  }}>
+                    <strong>Rating:</strong> {apt.review.rating}/5
+                    <p>{apt.review.text}</p>
+                  </div>
+
+                )}
+
               </div>
+
             </div>
+
           ))}
+
         </>
       )}
+
     </div>
   );
+
 }
 
-// ReviewSection Component
-function ReviewSection({ appointment, appointmentId, refresh }: { appointment: CustomerAppointment, appointmentId: string, refresh: () => void }) {
-  const [showForm, setShowForm] = useState(false);
+function ReviewForm({ appointmentId, addReview }: any) {
+
   const [rating, setRating] = useState(5);
   const [text, setText] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
-
-  if (appointment.review) {
-    return (
-      <div style={{ marginTop: "10px", background: "#e9ecef", borderRadius: "6px", padding: "12px" }}>
-        <strong>Your Review:</strong>
-        <div style={{ marginTop: "6px" }}>
-          <span style={{ color: "#f59f00", fontWeight: 600 }}>Rating: {appointment.review.rating} / 5</span>
-        </div>
-        <div style={{ marginTop: "6px" }}>{appointment.review.text}</div>
-        <div style={{ fontSize: "12px", color: "#868e96", marginTop: "4px" }}>
-          Reviewed on {new Date(appointment.review.createdAt).toLocaleDateString()}
-        </div>
-      </div>
-    );
-  }
-
-  if (!showForm) {
-    return (
-      <button
-        style={{ marginTop: "10px", backgroundColor: "#d63384", color: "white", border: "none", borderRadius: "4px", padding: "8px 20px", fontWeight: 600, cursor: "pointer" }}
-        onClick={() => setShowForm(true)}
-      >
-        Leave Review
-      </button>
-    );
-  }
 
   return (
+
     <form
-      style={{ marginTop: "10px", background: "#fff0f6", borderRadius: "6px", padding: "12px" }}
-      onSubmit={async (e) => {
+      onSubmit={(e) => {
+
         e.preventDefault();
-        setSubmitting(true);
-        setError("");
-        try {
-          await updateDoc(doc(db, "appointments", appointmentId), {
-            review: {
-              rating,
-              text,
-              createdAt: new Date().toISOString(),
-            },
-          });
-          refresh();
-        } catch (err) {
-          setError("Failed to submit review. Please try again.");
-        } finally {
-          setSubmitting(false);
-        }
+        addReview(appointmentId, rating, text);
+
       }}
     >
-      <div style={{ marginBottom: "8px" }}>
-        <label style={{ fontWeight: 500, marginRight: "8px" }}>Rating:</label>
-        <select value={rating} onChange={e => setRating(Number(e.target.value))} disabled={submitting}>
-          {[5,4,3,2,1].map(r => (
-            <option key={r} value={r}>{r}</option>
-          ))}
-        </select>
-      </div>
-      <div style={{ marginBottom: "8px" }}>
-        <label style={{ fontWeight: 500, marginRight: "8px" }}>Review:</label>
-        <textarea
-          value={text}
-          onChange={e => setText(e.target.value)}
-          rows={3}
-          style={{ width: "100%", borderRadius: "4px", border: "1px solid #dee2e6", padding: "6px" }}
-          disabled={submitting}
-          required
-        />
-      </div>
-      {error && <div style={{ color: "#d63384", marginBottom: "8px" }}>{error}</div>}
-      <button
-        type="submit"
-        style={{ backgroundColor: "#d63384", color: "white", border: "none", borderRadius: "4px", padding: "8px 20px", fontWeight: 600, cursor: submitting ? "not-allowed" : "pointer" }}
-        disabled={submitting}
+
+      <select
+        value={rating}
+        onChange={(e) => setRating(Number(e.target.value))}
       >
-        {submitting ? "Submitting..." : "Submit Review"}
+        {[5,4,3,2,1].map(r => (
+          <option key={r} value={r}>{r}</option>
+        ))}
+      </select>
+
+      <input
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="Leave your review"
+        required
+      />
+
+      <button type="submit">
+        Submit Review
       </button>
+
     </form>
+
   );
+
 }

@@ -2,18 +2,24 @@ import { useState } from "react";
 import { db } from "../firebase/config";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
-export default function HairstyleUploader() {
+interface HairstyleUploaderProps {
+  onUploadSuccess?: () => void;
+}
+
+export default function HairstyleUploader({ onUploadSuccess }: HairstyleUploaderProps) {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleUpload = async () => {
-    if (!imageFile || !name) {
+    if (!imageFile || !name.trim()) {
       setMessage("Please provide a name and select an image.");
       return;
     }
 
     try {
+      setIsUploading(true);
       setMessage("Uploading image...");
 
       const formData = new FormData();
@@ -43,7 +49,7 @@ export default function HairstyleUploader() {
 
       // Save to Firestore
       await addDoc(collection(db, "hairstyles"), {
-        name,
+        name: name.trim(),
         imageUrl: data.secure_url,
         createdAt: serverTimestamp(),
       });
@@ -51,9 +57,16 @@ export default function HairstyleUploader() {
       setMessage("Hairstyle uploaded successfully ✅");
       setName("");
       setImageFile(null);
+
+      // Call the success callback to refresh the parent component
+      if (onUploadSuccess) {
+        onUploadSuccess();
+      }
     } catch (error) {
       console.error(error);
       setMessage("Upload failed ❌");
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -66,15 +79,19 @@ export default function HairstyleUploader() {
         placeholder="Hairstyle name"
         value={name}
         onChange={(e) => setName(e.target.value)}
+        disabled={isUploading}
       />
 
       <input
         type="file"
         accept="image/*"
         onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+        disabled={isUploading}
       />
 
-      <button onClick={handleUpload}>Upload</button>
+      <button onClick={handleUpload} disabled={isUploading}>
+        {isUploading ? "Uploading..." : "Upload"}
+      </button>
 
       {message && <p>{message}</p>}
     </div>

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { MdEmail } from "react-icons/md";
 import { FaWhatsapp, FaPhoneAlt } from "react-icons/fa";
@@ -5,14 +6,38 @@ import { FaWhatsapp, FaPhoneAlt } from "react-icons/fa";
 export default function LandingPage() {
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Scroll-triggered animations using IntersectionObserver
+    const faders = document.querySelectorAll(
+      ".fade-up, .slide-down, .fade-in"
+    );
+
+    const appearOptions = {
+      threshold: 0.2,
+      rootMargin: "0px 0px -50px 0px",
+    };
+
+    const appearOnScroll = new IntersectionObserver(
+      function (entries, appearOnScroll) {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("appear");
+          appearOnScroll.unobserve(entry.target);
+        });
+      },
+      appearOptions
+    );
+
+    faders.forEach((fader) => {
+      appearOnScroll.observe(fader);
+    });
+  }, []);
+
   return (
-    <div className="landing-page">
+    <>
       {/* ================= WHITE HEADER ================= */}
-      <header className="landing-header">
-        <div
-          className="header-logo"
-          onClick={() => navigate("/")}
-        >
+      <header className="landing-header fade-in">
+        <div className="header-logo" onClick={() => navigate("/")}>
           BOKANG UTICA HAIR SALON
         </div>
 
@@ -29,20 +54,26 @@ export default function LandingPage() {
         <div className="hero-overlay"></div>
 
         <div className="hero-content">
-          <h1>
+          <h1 className="fade-up delay-1">
             Beautiful <span>Hairstyles</span> <br />
             Crafted with Care
           </h1>
 
-          <p>
-            Bokang Utica Hair Salon offers professional braiding, natural hair
-            care, and modern protective styles designed to enhance your beauty
-            and confidence.
+          <p className="fade-up delay-2">
+            Professional braiding, natural hair care and protective styles
+            designed to enhance your beauty and confidence.
           </p>
 
-          <div className="hero-buttons">
+          <div className="hero-buttons fade-up delay-3">
             <button onClick={() => navigate("/hairstyles")}>
               Explore Hairstyles
+            </button>
+
+            <button
+              className="secondary"
+              onClick={() => navigate("/auth")}
+            >
+              Book Appointment
             </button>
           </div>
         </div>
@@ -50,30 +81,29 @@ export default function LandingPage() {
 
       {/* ================= INFO SECTION ================= */}
       <section className="info-section">
-        <h2>Why Choose Bokang Utica?</h2>
+        <h2 className="fade-up delay-1">Why Choose Bokang Utica?</h2>
 
         <div className="info-grid">
-          <div className="info-card">
+          <div className="info-card fade-up delay-2">
             <h3>Professional Styling</h3>
             <p>
-              We specialize in neat, long-lasting styles created with precision
-              and care.
+              Neat, long-lasting hairstyles created with precision and care.
             </p>
           </div>
 
-          <div className="info-card">
+          <div className="info-card fade-up delay-3">
             <h3>Client Comfort</h3>
             <p>
-              Your comfort matters. We create styles that are both beautiful and
-              gentle on your scalp.
+              We create styles that are beautiful, comfortable and gentle on
+              your scalp.
             </p>
           </div>
 
-          <div className="info-card">
-            <h3>Trusted & Reliable</h3>
+          <div className="info-card fade-up delay-4">
+            <h3>Trusted Service</h3>
             <p>
-              Our clients trust us for quality, consistency, and excellent
-              service.
+              Our clients trust us for quality work, reliability and excellent
+              customer care.
             </p>
           </div>
         </div>
@@ -81,14 +111,12 @@ export default function LandingPage() {
 
       {/* ================= CONTACT SECTION ================= */}
       <section className="contact-section">
-        <h2>Contact Us</h2>
+        <h2 className="fade-up delay-1">Contact Us</h2>
 
-        <div className="contact-items">
+        <div className="contact-items fade-up delay-2">
           <div className="contact-item">
             <MdEmail className="contact-icon email" />
-            <a href="mailto:bokang262@gmail.com">
-              bokang262@gmail.com
-            </a>
+            <a href="mailto:bokang262@gmail.com">bokang262@gmail.com</a>
           </div>
 
           <div className="contact-item">
@@ -115,12 +143,10 @@ export default function LandingPage() {
 
           <div className="contact-item">
             <FaPhoneAlt className="contact-icon phone" />
-            <a href="tel:+26651601010">
-              +266 5160 1010
-            </a>
+            <a href="tel:+26651601010">+266 5160 1010</a>
           </div>
         </div>
       </section>
-    </div>
+    </>
   );
 }

@@ -9,3 +9,18 @@ services:
     ports:
       - "5173:80"
     restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+
+  email-server:
+    container_name: bokang-utica-email-server
+    build:
+      context: .
+      dockerfile: Dockerfile.email
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - .env
