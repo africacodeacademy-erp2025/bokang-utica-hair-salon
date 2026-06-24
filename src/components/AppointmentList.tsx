@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { collection, doc, updateDoc, onSnapshot } from "firebase/firestore";
+import { collection, doc, updateDoc, onSnapshot, deleteDoc, getDocs } from "firebase/firestore";
+import { FaTrash } from "react-icons/fa";
 import { db } from "../firebase/config";
 
 interface Appointment {
@@ -103,6 +104,42 @@ export default function AppointmentList() {
     } catch (error) {
       console.error("Error updating status:", error);
       setError("Failed to update appointment status. Please try again.");
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    const appointment = appointments.find(a => a.id === id);
+    if (!appointment) return;
+    const confirmed = window.confirm(
+      `Are you sure you want to DELETE the appointment for ${appointment.customerName} on ${appointment.date} at ${appointment.time}? This action cannot be undone.`
+    );
+    if (!confirmed) return;
+    try {
+      await deleteDoc(doc(db, "appointments", id));
+      setAppointments(prev => prev.filter(a => a.id !== id));
+    } catch (error) {
+      console.error("Error deleting appointment:", error);
+      setError("Failed to delete appointment. Please try again.");
+    }
+  };
+
+  const handleDeleteAll = async () => {
+    if (!appointments.length) return;
+    const confirmed = window.confirm(
+      `Are you sure you want to DELETE ALL appointments? This action cannot be undone.`
+    );
+    if (!confirmed) return;
+    try {
+      const snapshot = await getDocs(collection(db, "appointments"));
+      const deletes: Promise<void>[] = [];
+      snapshot.forEach(docSnap => {
+        deletes.push(deleteDoc(doc(db, "appointments", docSnap.id)));
+      });
+      await Promise.all(deletes);
+      setAppointments([]);
+    } catch (error) {
+      console.error("Error deleting all appointments:", error);
+      setError("Failed to delete all appointments. Please try again.");
     }
   };
 
@@ -219,6 +256,9 @@ export default function AppointmentList() {
         }} onClick={() => setTodayFilter(prev => !prev)}>
           {todayFilter ? "Showing Today" : "Today's Appointments"}
         </button>
+        <button onClick={handleDeleteAll} style={{ ...primaryBtn, background: '#8b0000', padding: '8px 12px' }}>
+          Delete All
+        </button>
       </div>
 
       {/* Appointment Cards */}
@@ -256,6 +296,9 @@ export default function AppointmentList() {
                 <>
                   <button style={primaryBtn} onClick={() => { setEditingId(app.id); setEditDate(app.date); setEditTime(app.time); }}>Edit</button>
                   <button style={dangerBtn} onClick={() => handleCancel(app.id)}>Cancel</button>
+                  <button onClick={() => handleDelete(app.id)} title="Delete appointment" style={{ ...primaryBtn, background: '#8b0000', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <FaTrash /> Delete
+                  </button>
                 </>
               )}
             </div>
@@ -342,6 +385,14 @@ const secondaryBtn: React.CSSProperties = {
 const dangerBtn: React.CSSProperties = {
   ...primaryBtn,
   background: "#dc3545",
+};
+
+const deleteBtn: React.CSSProperties = {
+  ...primaryBtn,
+  background: "#8b0000",
+  display: "flex",
+  alignItems: "center",
+  gap: "4px",
 };
 
 const small: React.CSSProperties = {

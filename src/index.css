@@ -236,7 +236,9 @@ tr:hover {
 /* ================= ADMIN SIDEBAR LAYOUT ================= */
 .admin-layout {
   display: flex;
+  flex-direction: row;
   min-height: 100vh;
+  width: 100%;
 }
 
 /* ================= SIDEBAR ================= */
@@ -247,6 +249,7 @@ tr:hover {
   padding: 40px 25px;
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
 }
 
 .admin-sidebar h2 {
@@ -302,6 +305,8 @@ tr:hover {
   flex: 1;
   padding: 50px;
   background: #f7f8fb;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .dashboard-section {
@@ -404,7 +409,7 @@ tr:hover {
 /* ================= HERO SECTION ================= */
 .hero {
   position: relative;
-  height: 100vh;
+  min-height: calc(100vh - 80px);
   background-image: url("https://images.unsplash.com/photo-1600948836101-f9ffda59d250");
   background-size: cover;
   background-position: center;
@@ -592,6 +597,89 @@ tr:hover {
 
   .signin-btn {
     padding: 10px 20px;
+  }
+
+  /* Make hero content fit better on small screens */
+  .hero {
+    min-height: calc(100vh - 64px);
+    background-position: center;
+  }
+
+  .hero-content {
+    padding: 20px;
+  }
+
+  .hero-content h1 {
+    font-size: 1.6rem;
+  }
+
+  .hero-content p {
+    font-size: 1rem;
+  }
+}
+
+/* Handle small-height landscape mobile where 100vh can be problematic */
+@media (orientation: landscape) and (max-height: 640px) {
+  .hero {
+    min-height: 56vh;
+  }
+
+  .hero-content h1 {
+    font-size: 1.4rem;
+  }
+}
+
+/* ================= ADMIN MOBILE RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .admin-layout {
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  .admin-sidebar {
+    display: none !important;
+  }
+
+  .admin-content {
+    padding: 15px 10px;
+    width: 100%;
+    flex: 1;
+    order: 2;
+  }
+
+  .admin-topnav {
+    order: 1;
+  }
+
+  .dashboard-section {
+    padding: 15px 10px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .dashboard-section h1 {
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+  }
+
+  table {
+    font-size: 0.85rem;
+    overflow-x: auto;
+    display: block;
+    box-sizing: border-box;
+  }
+
+  th {
+    padding: 8px 6px;
+  }
+
+  td {
+    padding: 8px 6px;
+  }
+
+  button {
+    padding: 8px 12px;
+    font-size: 0.85rem;
   }
 }
 

@@ -84,7 +84,7 @@ export default function AdminDashboard() {
       </nav>
 
       {/* ================= MAIN CONTENT ================= */}
-      <main className="admin-content" style={{ flex: 1, padding: "20px" }}>
+      <main className="admin-content">
         <button 
           onClick={() => navigate("/")}
           style={{ marginBottom: "20px" }}
